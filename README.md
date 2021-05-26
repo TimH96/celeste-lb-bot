@@ -1,6 +1,6 @@
 # Celeste Leaderboard Bot
 
-This is a bot to check for basic speedrun submission errors for the [Celeste leaderboards]() using the [speedrun.com REST API]() and Python. This project can easily be forked for similiar projects. Just adjust the ``CelesteLeaderboardBot`` class and its ``main`` method.
+This is a bot to check for basic speedrun submission errors for the [Celeste leaderboards](https://www.speedrun.com/celeste) using the [speedrun.com REST API](https://github.com/speedruncomorg/api) and Python. This project can easily be forked for similiar projects. Just adjust the ``CelesteLeaderboardBot`` class and its ``main`` method.
 
 ### Setup
 
