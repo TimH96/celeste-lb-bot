@@ -55,14 +55,16 @@ class CelesteLeaderboardBot:
 
             Checks for the validity of any new submission not in the given ignore list and rejects them if necessary.
         """
-        cache       : list = []
-        faulty_runs : list = []
+        cache : list = []
         # loop over all games
         for game in self.GAMES:
+            faulty_runs : list = []
             try:
                 get_req : Request = Request(f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new')
+                print(get_req.selector)
                 get_req.add_header('User-Agent', CelesteLeaderboardBot.AGENT)
                 new_runs : dict = json.loads(urlopen(get_req).read())["data"]
+                print(new_runs)
                 # loop over all new runs of a given game
                 for this_run in new_runs:
                     # cache run for next iteration and skip if it was cached last iteration
