@@ -3,9 +3,12 @@ celeste_bot.py
 """
 
 import json
-from threading  import Timer
-from urllib     import request
-from enum       import IntEnum
+from threading      import Timer
+from urllib.request import Request, urlopen
+from urllib.error   import HTTPError
+from enum           import IntEnum
+
+__version__ = "1.0"
 
 
 class SubmissionErrors(IntEnum):
@@ -47,10 +50,10 @@ class CelesteLeaderboardBot:
         faulty_runs : list = []
         # loop over all games
         for game in self.GAMES:
-            #try:
-                new_runs : dict = json.loads(
-                    request.urlopen("https://www.speedrun.com/api/v1/runs?game={}&status=new".format(game["id"])).read()
-                )["data"]
+            try:
+                req : Request = Request("https://www.speedrun.com/api/v1/runs?game={}&status=new".format(game["id"]))
+                req.add_header('User-Agent', f'celeste-leaderboard-bot{__version__}')
+                new_runs : dict = json.loads(urlopen(req).read())["data"]
                 # loop over all new runs of a given game
                 for this_run in new_runs:
                     # cache run for next iteration and skip if it was cached last iteration
@@ -75,10 +78,14 @@ class CelesteLeaderboardBot:
                 for this_run in faulty_runs:
                     print("invalid: ", this_run)
                     pass  # TODO reject them
-            #except Exception as error: raise error  # TODO !!! error handling on: HTTP404 or OS Conn Refused, prolly just continue
+            # invalid URI
+            except HTTPError:
+                break
+            # connection error
+            except (ConnectionResetError, ConnectionRefusedError, ConnectionAbortedError, ConnectionError):
+                break
         # loop again if running from start()
-        if loop:
-                Timer(self.TIMER, self.main, [cache, loop]).start()
+        if loop: Timer(self.TIMER, self.main, [cache, loop]).start()
 
     def start(self) -> None:
         """Start bot, blocking calling thread"""
