@@ -16,60 +16,59 @@ config : dict = {
             "name"    : "Celeste",
             "version" : {
                 "id_var" : "38do9y4l",
-                "id_val" : ""
-            }
-        },
-        {
-            "id"      : "j1ne9me1",
-            "name"    : "Celeste Category Extensions",
-            "version" : {
-                "id_var" : "TODO",
-                "id_val" : "TODO"
-            }
-        },
-        """
-        {
-            "id"      : "w6j7lx46",
-            "name"    : "Celeste D-Sides",
-            "version" : {
-                "id_var" : "TODO",
-                "id_val" : "TODO"
-            }
-        },
-        {
-            "id"      : "w6jl3ked",
-            "name"    : "Celeste Custom Maps",
-            "version" : {
-                "id_var" : "TODO",
-                "id_val" : "TODO"
-            }
-        },
-        {
-            "id"      : "y6554g36",
-            "name"    : "Celeste Glyph",
-            "version" : {
-                "id_var" : "TODO",
-                "id_val" : "TODO"
-            }
-        },
-        {
-            "id"      : "46w3p271",
-            "name"    : "Celeste Quickie Mountain 2",
-            "version" : {
-                "id_var" : "TODO",
-                "id_val" : "TODO"
-            }
-        },
-        {
-            "id"      : "k6qw4q06",
-            "name"    : "Celeste 2020 Spring Collab",
-            "version" : {
-                "id_var" : "TODO",
-                "id_val" : "TODO"
+                "id_val" : "5q8e7y3q"
             }
         }
-        """
+        #
+        #{
+        #    "id"      : "j1ne9me1",
+        #    "name"    : "Celeste Category Extensions",
+        #    "version" : {
+        #        "id_var" : "TODO",
+        #        "id_val" : "TODO"
+        #    }
+        #},
+        #{
+        #    "id"      : "w6j7lx46",
+        #    "name"    : "Celeste D-Sides",
+        #    "version" : {
+        #        "id_var" : "TODO",
+        #        "id_val" : "TODO"
+        #    }
+        #},
+        #{
+        #    "id"      : "w6jl3ked",
+        #    "name"    : "Celeste Custom Maps",
+        #    "version" : {
+        #        "id_var" : "TODO",
+        #        "id_val" : "TODO"
+        #    }
+        #},
+        #{
+        #    "id"      : "y6554g36",
+        #    "name"    : "Celeste Glyph",
+        #    "version" : {
+        #        "id_var" : "TODO",
+        #        "id_val" : "TODO"
+        #    }
+        #},
+        #{
+        #    "id"      : "46w3p271",
+        #    "name"    : "Celeste Quickie Mountain 2",
+        #    "version" : {
+        #        "id_var" : "TODO",
+        #        "id_val" : "TODO"
+        #    }
+        #},
+        #{
+        #    "id"      : "k6qw4q06",
+        #    "name"    : "Celeste 2020 Spring Collab",
+        #    "version" : {
+        #        "id_var" : "TODO",
+        #        "id_val" : "TODO"
+        #    }
+        #}
     ]
 }
 
-CelesteLeaderboardBot(**config).main()
+CelesteLeaderboardBot(**config).start()
