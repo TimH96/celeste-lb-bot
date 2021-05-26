@@ -22,7 +22,7 @@ class CelesteLeaderboardBot:
     """Class for leaderboard bot, interacting with speedrun.com API"""
 
     AGENT       : str = f'celeste-leaderboard-bot{__version__}'
-    BASE_REASON : Callable = lambda x : f'The Celeste Leaderboard Bot found the following problem{x} with your submission, please edit your submission accordingly: '
+    BASE_REASON : Callable = lambda x : f'The Celeste Leaderboard Bot found the following problem{x} with your submission, please edit it accordingly: '
     REASON_TEXT : dict = {
         0 : "Your submission has real-time, leave the real-time column empty",
         1 : "Your submission has no version selected, make sure to select the correct game version",
@@ -96,12 +96,13 @@ class CelesteLeaderboardBot:
                             'Content-Type'  : 'application/json',
                             'X-API-Key'     : self.KEY,
                         },
-                        data = {
+                        data = bytes(json.dumps({
                             "status": {
                                 "status": "rejected",
                                 "reason": CelesteLeaderboardBot.BASE_REASON(x) + dyn_reason
                             }
-                        }
+                        }), encoding="utf-8"),
+                        method = "PUT"
                     )
                     urlopen(put_req)
                     print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
