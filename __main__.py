@@ -9,9 +9,16 @@ from celeste_bot import CelesteLeaderboardBot
 # TODO read out settings
 config : dict = {
     "key"   : None,
-    "timer" : 60,
+    "timer" : 5,
     "games" : [
-        "o1y9j9v6"
+        {
+            "id"      : "o1y9j9v6",
+            "name"    : "Celeste",
+            "version" : {
+                "id_var" : "",
+                "id_val" : "" 
+            }
+        }
     ]
 }
 

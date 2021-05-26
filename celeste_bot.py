@@ -2,7 +2,9 @@
 celeste_bot.py
 """
 
-from threading import Timer
+import json
+from threading  import Timer
+from urllib     import request
 
 
 class CelesteLeaderboardBot:
@@ -19,13 +21,29 @@ class CelesteLeaderboardBot:
 
             Checks for the validity of any new submission not in the given ignore list and rejects them if necessary.
         """
-        cache : list = []
-        # TODO main logic
-        
 
-        # queue again on timer if looping
+        cache : list = []
+        # loop over all games
+        for game in self.GAMES:
+            try:
+                new_runs : dict = json.loads(
+                    request.urlopen("https://www.speedrun.com/api/v1/runs?game={}&status=new".format(game["id"])).read()
+                )
+                # loop over all new runs of a given game
+                for run in new_runs["data"]:
+                    print(run["values"])
+                    # cache run for next iteration and skip if it was cached last iteration
+                    cache.append(run["id"])
+                    if run["id"] in ignore:
+                        print("continued")
+                        continue
+                    # validity checks
+                    pass
+                
+            except Exception: pass  # TODO !!! error handling on: HTTP404 or OS Conn Refused, prolly just continue
+        # loop again if running from start()
         if loop:
-            Timer(self.TIMER, self.main, [cache, loop]).start()
+                Timer(self.TIMER, self.main, [cache, loop]).start()
 
     def start(self) -> None:
         """Start bot, blocking calling thread"""
@@ -66,7 +84,14 @@ if __name__ == '__main__':
         "key"   : None,
         "timer" : 60,
         "games" : [
-            "o1y9j9v6"
+            {
+                "id"      : "o1y9j9v6",
+                "name"    : "Celeste",
+                "version" : {
+                    "id_var" : "38do9y4l",
+                    "id_val" : "" 
+                }
+            }
         ]
     }
 
