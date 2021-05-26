@@ -26,7 +26,7 @@ class CelesteLeaderboardBot:
     def _valid_real_time(cls, run : dict) -> bool:
         """Checks if any RTA is submitted, returns False if so"""
         return run["times"]["realtime_t"] == 0
-    
+
     @classmethod
     def _valid_version(cls, run: dict, *, id_var: str, id_val: str) -> bool:
         """Checks if the default version is submitted, returns False if so"""
