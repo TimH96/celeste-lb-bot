@@ -7,6 +7,7 @@ from threading      import Timer
 from urllib.request import Request, urlopen
 from urllib.error   import HTTPError
 from enum           import IntEnum
+from typing         import Callable
 
 __version__ = "1.0"
 
@@ -19,6 +20,14 @@ class SubmissionErrors(IntEnum):
 
 class CelesteLeaderboardBot:
     """Class for leaderboard bot, interacting with speedrun.com API"""
+
+    AGENT       : str = f'celeste-leaderboard-bot{__version__}'
+    BASE_REASON : Callable = lambda x : f'The Celeste Leaderboard Bot found the following problem{x} with your submission, please edit your submission accordingly: '
+    REASON_TEXT : dict = {
+        0 : "Your submission has real-time, leave the real-time column empty",
+        1 : "Your submission has no version selected, make sure to select the correct game version",
+        2 : "Your submission has an invalid IGT, double check the final time of your run and adjust the submission"
+    }
 
     def __init__(self, *, key: str, timer: float, games: list) -> None:
         self.KEY   : str   = key
@@ -51,9 +60,9 @@ class CelesteLeaderboardBot:
         # loop over all games
         for game in self.GAMES:
             try:
-                req : Request = Request("https://www.speedrun.com/api/v1/runs?game={}&status=new".format(game["id"]))
-                req.add_header('User-Agent', f'celeste-leaderboard-bot{__version__}')
-                new_runs : dict = json.loads(urlopen(req).read())["data"]
+                get_req : Request = Request(f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new')
+                get_req.add_header('User-Agent', CelesteLeaderboardBot.AGENT)
+                new_runs : dict = json.loads(urlopen(get_req).read())["data"]
                 # loop over all new runs of a given game
                 for this_run in new_runs:
                     # cache run for next iteration and skip if it was cached last iteration
@@ -76,8 +85,26 @@ class CelesteLeaderboardBot:
                         faulty_runs.append(invalid_run)
                 # loop over all invalid runs
                 for this_run in faulty_runs:
-                    print("invalid: ", this_run)
-                    pass  # TODO reject them
+                    x : str = 's' if len(this_run["faults"]) > 1 else ''
+                    dyn_reason : str = ' || '.join(
+                        [CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]]
+                    )
+                    put_req : Request = Request(
+                        f'https://www.speedrun.com/api/v1/runs/{this_run["id"]}/status',
+                        headers = {
+                            'User-Agent'    : CelesteLeaderboardBot.AGENT,
+                            'Content-Type'  : 'application/json',
+                            'X-API-Key'     : self.KEY,
+                        },
+                        data = {
+                            "status": {
+                                "status": "rejected",
+                                "reason": CelesteLeaderboardBot.BASE_REASON(x) + dyn_reason
+                            }
+                        }
+                    )
+                    urlopen(put_req)
+                    print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
             # invalid URI
             except HTTPError:
                 break
