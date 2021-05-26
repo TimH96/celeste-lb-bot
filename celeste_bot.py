@@ -5,6 +5,13 @@ celeste_bot.py
 import json
 from threading  import Timer
 from urllib     import request
+from enum       import IntEnum
+
+
+class SubmissionErrors(IntEnum):
+    ERROR_SUBMITTED_RTA   = 0
+    ERROR_INVALID_VERSION = 1
+    ERROR_INVALID_IGT     = 2
 
 
 class CelesteLeaderboardBot:
@@ -15,31 +22,58 @@ class CelesteLeaderboardBot:
         self.GAMES : float = games
         self.TIMER : list  = timer
 
+    @staticmethod
+    def _valid_real_time(cls, run : dict) -> bool:
+        return run["times"]["realtime_t"] == 0
+    
+    @staticmethod
+    def _valid_version(cls, run: dict, *, id_var: str, id_val: str) -> bool:
+        return not run["values"][id_var] == id_val
+
+    @staticmethod
+    def _valid_decimals(cls, run: dict) -> bool:
+        return True
+
     def main(self, ignore: list = [], loop: bool = False) -> None:
         """
-            Main validation function.
+            Main function.
 
             Checks for the validity of any new submission not in the given ignore list and rejects them if necessary.
         """
 
-        cache : list = []
+        cache       : list = []
+        faulty_runs : list = []
         # loop over all games
         for game in self.GAMES:
             try:
                 new_runs : dict = json.loads(
-                    request.urlopen("https://www.speedrun.com/api/v1/runs?game={}&status=new".format(game["id"])).read()
+                    request.urlopen("https://www.speedrun.com/api/v1/runs?game={}&status=new".format(game["id"])).read()["data"]
                 )
+                print(json.dumps(new_runs, indent=4))
                 # loop over all new runs of a given game
-                for run in new_runs["data"]:
-                    print(run["values"])
+                for this_run in new_runs:
                     # cache run for next iteration and skip if it was cached last iteration
-                    cache.append(run["id"])
-                    if run["id"] in ignore:
-                        print("continued")
+                    cache.append(this_run["id"])
+                    if this_run["id"] in ignore:
                         continue
                     # validity checks
-                    pass
-                
+                    invalid_run : dict = {
+                        "id"     : this_run["id"],
+                        "faults" : []
+                    }
+                    if not CelesteLeaderboardBot._valid_real_time(this_run):
+                        invalid_run["faults"].append(SubmissionErrors.ERROR_SUBMITTED_RTA)
+                    if not CelesteLeaderboardBot._valid_version(this_run, **game["version"]):
+                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
+                    if not CelesteLeaderboardBot._valid_decimals(this_run):
+                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
+                    # push to list of faulty runs if an error was found
+                    if not invalid_run["faults"]:
+                        faulty_runs.append(invalid_run)
+                # loop over all invalid runs
+                for this_run in faulty_runs:
+                    print("invalid: ", this_run)
+                    pass  # TODO reject them
             except Exception: pass  # TODO !!! error handling on: HTTP404 or OS Conn Refused, prolly just continue
         # loop again if running from start()
         if loop:
@@ -77,22 +111,3 @@ def is_valid_decimal(time: float):
     print((TIMER_OFFSET[nat % 17] + dec) % 17)
 
 is_valid_decimal(140.352)"""
-
-# test main method
-if __name__ == '__main__':
-    config : dict = {
-        "key"   : None,
-        "timer" : 60,
-        "games" : [
-            {
-                "id"      : "o1y9j9v6",
-                "name"    : "Celeste",
-                "version" : {
-                    "id_var" : "38do9y4l",
-                    "id_val" : "" 
-                }
-            }
-        ]
-    }
-
-    CelesteLeaderboardBot(**config).main()
