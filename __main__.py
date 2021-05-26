@@ -6,8 +6,7 @@ Reads out settings and CLI params and runs bot with them
 
 import sys
 import json
-from json.decoder import JSONDecodeError
-from celeste_bot  import CelesteLeaderboardBot
+from celeste_bot import CelesteLeaderboardBot
 
 # define config global
 config : dict
