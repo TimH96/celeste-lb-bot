@@ -1,0 +1,9 @@
+reject runs that are obviously wrong:
+
+fault 1 - time:
+	- RTA submitted
+	- loadless time invalid decimals
+
+fault 2 - version:
+	- no version selected
+	- version wasnt out at the time on that platform
