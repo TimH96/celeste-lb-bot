@@ -109,10 +109,14 @@ class CelesteLeaderboardBot:
                     urlopen(put_req)
                     print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
             # invalid URI
-            except HTTPError:
+            except HTTPError as error:
+                print(f'There was a HTTP error: {error}')
+                cache  = []
                 break
             # connection error
-            except (ConnectionResetError, ConnectionRefusedError, ConnectionAbortedError, ConnectionError):
+            except (ConnectionResetError, ConnectionRefusedError, ConnectionAbortedError, ConnectionError) as error:
+                print(f'There was a connection error: {error}')
+                cache = []
                 break
         # loop again if running from start()
         if loop: Timer(self.TIMER, self.main, [cache, loop]).start()
