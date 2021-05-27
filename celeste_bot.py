@@ -58,7 +58,7 @@ class CelesteLeaderboardBot:
         1 : "You did not select a version, make sure to select the correct game version",
         2 : "Your submission has an invalid IGT, check the final time of your run and adjust the submission",
         3 : "The version you selected does not exist on your platform, please select the correct game version",
-        4 : "The video you submitted is a Twitch past broadcast, which will be automatically deleted after a while, please highlight your run"
+        4 : "The video you submitted is a Twitch past broadcast that will be deleted after a while, please highlight your run"
     }
 
     def __init__(self, *, keys: dict, timer: float, games: list) -> None:
@@ -196,11 +196,14 @@ class CelesteLeaderboardBot:
                 # loop over all invalid runs
                 for this_run in faulty_runs:
                     # do PUT request
+                    full_reason : str
                     x : str = 's' if len(this_run["faults"]) > 1 else ''
+                    if len(this_run["faults"]) < 3:
+                        full_reason = CelesteLeaderboardBot.BASE_REASON(x) \
+                                    + [CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]]
+                    else:
+                        full_reason = f'{CelesteLeaderboardBot.ACCOUNT_NAME} found various issues with your submission, please read the rules or contact a moderator/verifier.'
                     print(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
-                    dyn_reason : str = ' || '.join(
-                        [CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]]
-                    )
                     put_req : Request = Request(
                         f'https://www.speedrun.com/api/v1/runs/{this_run["id"]}/status',
                         headers = {
@@ -211,7 +214,7 @@ class CelesteLeaderboardBot:
                         data = bytes(json.dumps({
                             "status": {
                                 "status": "rejected",
-                                "reason": CelesteLeaderboardBot.BASE_REASON(x) + dyn_reason
+                                "reason": full_reason
                             }
                         }), encoding="utf-8"),
                         method = "PUT"
