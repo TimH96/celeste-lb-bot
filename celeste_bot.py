@@ -23,9 +23,10 @@ class SubmissionErrors(IntEnum):
 class CelesteLeaderboardBot:
     """Class for leaderboard bot, interacting with speedrun.com API"""
 
-    AGENT       : str = f'celeste-leaderboard-bot{__version__}'
-    BASE_REASON : Callable = lambda x : f'The Celeste Leaderboard Bot found the following problem{x} with your submission, please edit it accordingly: '
-    REASON_TEXT : dict = {
+    ACCOUNT_NAME : str = "BadelineBot"
+    AGENT        : str = f'celeste-leaderboard-bot{__version__}'
+    BASE_REASON  : Callable = lambda x : f'{CelesteLeaderboardBot.ACCOUNT_NAME} found the following problem{x} with your submission, please edit it accordingly: '
+    REASON_TEXT  : dict = {
         0 : "Your submission has real-time, leave the real-time column empty",
         1 : "You did not select a version, make sure to select the correct game version",
         2 : "Your submission has an invalid IGT, check the final time of your run and adjust the submission",
