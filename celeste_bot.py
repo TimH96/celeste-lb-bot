@@ -3,6 +3,7 @@ celeste_bot.py
 """
 
 import json
+from random             import randint, random
 from threading          import Timer
 from urllib.request     import Request, urlopen, urlcleanup
 from urllib.error       import HTTPError
@@ -15,6 +16,20 @@ from twitch.constants   import OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS
 
 __version__ = "1.0"
 
+# funny API cache hack, SRC admins hate him
+QUERY_TABLE : dict = {
+    0 : "game",
+    1 : "category",
+    2 : "level",
+    3 : "platform",
+    4 : "region",
+    5 : "emulated",
+    6 : "date",
+    7 : "submitted",
+    8 : "status",
+    9 : "verify-date"
+}
+
 PLATFORMS : dict = {
     "PlayStation 4" : "nzelkr6q",
     "Xbox One"      : "o7e2mx6w",
@@ -23,7 +38,6 @@ PLATFORMS : dict = {
     "Google Stadia" : "o064z1e3",
     "PlayStation 5" : "4p9zjrer"
 }
-
 
 class SubmissionErrors(IntEnum):
     ERROR_SUBMITTED_RTA   = 0
@@ -48,6 +62,7 @@ class CelesteLeaderboardBot:
     }
 
     def __init__(self, *, keys: dict, timer: float, games: list) -> None:
+        self.q_counter  : int         = 0
         self.SRC_KEY    : str         = keys["src"]
         self.GAMES      : float       = games
         self.TIMER      : list        = timer
@@ -135,8 +150,9 @@ class CelesteLeaderboardBot:
             faulty_runs : list = []
             try:
                 urlcleanup()
+                rand_d  : str     = 'desc' if random() < 0.5 else 'asc'
                 get_req : Request = Request(
-                    f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new',
+                    f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new&direction={rand_d}&orderby={QUERY_TABLE[self.q_counter]}&max={randint(100, 200)}',  # they hate me :^)
                     headers = {
                         "cache-control": "no-cache"
                     }
@@ -193,7 +209,7 @@ class CelesteLeaderboardBot:
                         }), encoding="utf-8"),
                         method = "PUT"
                     )
-                    #urlopen(put_req)
+                    urlopen(put_req)
                     print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
             # invalid URI or no authorization
             except HTTPError as error:
@@ -206,6 +222,7 @@ class CelesteLeaderboardBot:
                 cache = []
                 break
         # loop again if running from start()
+        self.q_counter = (self.q_counter + 1) % len(QUERY_TABLE.keys())
         if loop: Timer(self.TIMER, self.main, [cache, loop]).start()
 
     def start(self) -> None:
