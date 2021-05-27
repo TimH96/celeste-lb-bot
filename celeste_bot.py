@@ -14,8 +14,10 @@ __version__ = "1.0"
 
 class SubmissionErrors(IntEnum):
     ERROR_SUBMITTED_RTA   = 0
-    ERROR_INVALID_VERSION = 1
+    ERROR_NO_VERSION      = 1
     ERROR_INVALID_IGT     = 2
+    ERROR_INVALID_VERSION = 3
+    ERROR_BAD_VOD         = 4
 
 
 class CelesteLeaderboardBot:
@@ -25,14 +27,17 @@ class CelesteLeaderboardBot:
     BASE_REASON : Callable = lambda x : f'The Celeste Leaderboard Bot found the following problem{x} with your submission, please edit it accordingly: '
     REASON_TEXT : dict = {
         0 : "Your submission has real-time, leave the real-time column empty",
-        1 : "Your submission has no version selected, make sure to select the correct game version",
-        2 : "Your submission has an invalid IGT, double check the final time of your run and adjust the submission"
+        1 : "You did not select a version, make sure to select the correct game version",
+        2 : "Your submission has an invalid IGT, check the final time of your run and adjust the submission",
+        3 : "The version you selected does not exist on your platform, please select the correct one",
+        4 : "The video you submitted is a Twitch past broadcast, which will be automatically deleted after a while, please highlight your run"
     }
 
-    def __init__(self, *, key: str, timer: float, games: list) -> None:
-        self.KEY   : str   = key
-        self.GAMES : float = games
-        self.TIMER : list  = timer
+    def __init__(self, *, keys: dict, timer: float, games: list) -> None:
+        self.SRC_KEY    : str   = keys["src"]
+        self.TWITCH_KEY : str   = keys["twitch"]
+        self.GAMES      : float = games
+        self.TIMER      : list  = timer
 
     @classmethod
     def _valid_real_time(cls, run : dict) -> bool:
@@ -40,7 +45,7 @@ class CelesteLeaderboardBot:
         return run["times"]["realtime_t"] == 0
 
     @classmethod
-    def _valid_version(cls, run: dict, *, id_var: str, id_val: str) -> bool:
+    def _valid_default_version(cls, run: dict, *, id_var: str, id_val: str) -> bool:
         """Checks if the default version is submitted, returns False if so"""
         return not(run["values"][id_var] == id_val)
 
@@ -48,6 +53,16 @@ class CelesteLeaderboardBot:
     def _valid_in_game_time(cls, run: dict) -> bool:
         """Checks if the submitted IGT is invalid, returns False if so"""
         return (int(1000 * run["times"]["ingame_t"]) % 17) == 0
+
+    @classmethod
+    def _valid_existing_version(cls, run: dict) -> bool:
+        """Checks if the submitted version is available on the submitted platform, returns False if it isn't"""
+        return True  # TODO
+
+    @classmethod
+    def _valid_permanent_vod(cls, run: dict) -> bool:
+        """Checks if submitted VOD is a past broadcast, returns False if so"""
+        return True  # TODO
 
     def main(self, ignore: list = [], loop: bool = False) -> None:
         """
@@ -74,10 +89,19 @@ class CelesteLeaderboardBot:
                         "id"     : this_run["id"],
                         "faults" : []
                     }
+                    # RTA check
                     if not CelesteLeaderboardBot._valid_real_time(this_run):
                         invalid_run["faults"].append(SubmissionErrors.ERROR_SUBMITTED_RTA)
-                    if not CelesteLeaderboardBot._valid_version(this_run, **game["version"]):
-                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
+                    # default version check
+                    if not CelesteLeaderboardBot._valid_default_version(this_run, **game["version"]):  # TODO call needs to be adjusted
+                        invalid_run["faults"].append(SubmissionErrors.ERROR_NO_VERSION)
+                    # IGT check
+                    if not CelesteLeaderboardBot._valid_in_game_time(this_run):
+                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
+                    # existing version check
+                    if not CelesteLeaderboardBot._valid_existing_version(this_run):
+                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
+                    # past broadcast check
                     if not CelesteLeaderboardBot._valid_in_game_time(this_run):
                         invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
                     # push to list of faulty runs if an error was found
@@ -94,7 +118,7 @@ class CelesteLeaderboardBot:
                         headers = {
                             'User-Agent'    : CelesteLeaderboardBot.AGENT,
                             'Content-Type'  : 'application/json',
-                            'X-API-Key'     : self.KEY,
+                            'X-API-Key'     : self.SRC_KEY,
                         },
                         data = bytes(json.dumps({
                             "status": {
@@ -106,9 +130,9 @@ class CelesteLeaderboardBot:
                     )
                     urlopen(put_req)
                     print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
-            # invalid URI
+            # invalid URI or no authorization
             except HTTPError as error:
-                print(f'There was a HTTP error: {error}')
+                print(f'There was an HTTP error: {error}')
                 cache  = []
                 break
             # connection error
