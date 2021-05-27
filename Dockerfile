@@ -1,4 +1,4 @@
-FROM arm64v8/python:3
+FROM python:3
 RUN pip install python-twitch-client
 ADD __main__.py /
 ADD celeste_bot.py /
