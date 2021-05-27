@@ -4,7 +4,7 @@ celeste_bot.py
 
 import json
 from threading          import Timer
-from urllib.request     import Request, urlopen
+from urllib.request     import Request, urlopen, urlcleanup
 from urllib.error       import HTTPError
 from urllib.parse       import ParseResult, urlparse
 from enum               import IntEnum
@@ -134,7 +134,13 @@ class CelesteLeaderboardBot:
         for game in self.GAMES:
             faulty_runs : list = []
             try:
-                get_req : Request = Request(f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new')
+                urlcleanup()
+                get_req : Request = Request(
+                    f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new',
+                    headers = {
+                        "cache-control": "no-cache"
+                    }
+                )
                 get_req.add_header('User-Agent', CelesteLeaderboardBot.AGENT)
                 new_runs : dict = json.loads(urlopen(get_req).read())["data"]
                 # loop over all new runs of a given game
