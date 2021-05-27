@@ -133,13 +133,14 @@ class CelesteLeaderboardBot:
             print(f'There was an error with a request on Twitch API: {error}')
             return True
 
-    def main(self, ignore: list = [], loop: bool = False) -> None:
+    def main(self, ignore: list = [], already_rejected: list = [], loop: bool = False) -> None:
         """
             Main function.
 
             Checks for the validity of any new submission not in the given ignore list and rejects them if necessary.
         """
-        cache : list = []
+        cache    : list = []
+        rejected : list = []
         # get new oauth
         try:
             self.TTV_CLIENT.get_oauth()
@@ -161,6 +162,10 @@ class CelesteLeaderboardBot:
                 new_runs : dict = json.loads(urlopen(get_req).read())["data"]
                 # loop over all new runs of a given game
                 for this_run in new_runs:
+                    # skip if already rejected
+                    if this_run["id"] in already_rejected:
+                        rejected.append(this_run["id"])
+                        continue
                     # cache run for next iteration and skip if it was cached last iteration
                     cache.append(this_run["id"])
                     if this_run["id"] in ignore:
@@ -190,6 +195,7 @@ class CelesteLeaderboardBot:
                         faulty_runs.append(invalid_run)
                 # loop over all invalid runs
                 for this_run in faulty_runs:
+                    # do PUT request
                     x : str = 's' if len(this_run["faults"]) > 1 else ''
                     dyn_reason : str = ' || '.join(
                         [CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]]
@@ -210,21 +216,25 @@ class CelesteLeaderboardBot:
                         method = "PUT"
                     )
                     urlopen(put_req)
+                    # save id and output
+                    rejected.append(this_run["id"])
                     print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
             # invalid URI or no authorization
             except HTTPError as error:
-                print(f'There was an HTTP error: {error}')
-                cache  = []
+                print(f'There was an HTTP error: {error} on {error.url}')
+                cache = list(set(cache + ignore))
+                rejected = list(set(rejected + already_rejected))
                 break
             # connection error
             except (ConnectionResetError, ConnectionRefusedError, ConnectionAbortedError, ConnectionError) as error:
                 print(f'There was a connection error: {error}')
-                cache = []
+                cache = list(set(cache + ignore))
+                rejected = list(set(rejected + already_rejected))
                 break
         # loop again if running from start()
         self.q_counter = (self.q_counter + 1) % len(QUERY_TABLE.keys())
-        if loop: Timer(self.TIMER, self.main, [cache, loop]).start()
+        if loop: Timer(self.TIMER, self.main, [cache, rejected, loop]).start()
 
     def start(self) -> None:
         """Start bot, blocking calling thread"""
-        self.main([], True)
+        self.main([], [], True)
