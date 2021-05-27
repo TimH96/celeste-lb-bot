@@ -85,16 +85,26 @@ class CelesteLeaderboardBot:
     def _valid_persistent_vod(cls, run: dict, client: TwitchHelix) -> bool:
         """Checks if submitted VOD is a past broadcast, returns False if so"""
         try:
-            uri = run["videos"]["links"]["uri"]
-            if not uri: return False
-            par : ParseResult = urlparse(uri)
+            link_list : list = run["videos"]["links"]
+            ttv_index : int  = -1
+            par_res   : ParseResult
+            for i, x in enumerate(link_list):
+                par : ParseResult = urlparse(x["uri"])
+                if 'twitch.tv' in par.netloc:
+                    ttv_index = i
+                    par_res = par
+                    break
             # only check for twitch uri's
-            if 'twitch.tv' not in par.netloc:
+            if ttv_index == -1:
                 return True
             else:
                 try:
-                    vid_id : int = int(par.path.split("/")[2])
-                    client.get_videos(video_ids=[vid_id])
+                    vid_id   : int  = int(par_res.path.split("/")[2])
+                    vid_data : dict = client.get_videos(video_ids=[vid_id])[0]
+                    if vid_data["type"] == "archive":
+                        return False
+                    else:
+                        return True
                 # catch potential errors with exctracting vid id
                 except IndexError:
                     return True
@@ -151,7 +161,7 @@ class CelesteLeaderboardBot:
                     if not CelesteLeaderboardBot._valid_existing_version(this_run, **game["version"]):
                         invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
                     # past broadcast check
-                    if not CelesteLeaderboardBot._valid_persistent_vod(this_run, self.TWITCH_KEY):
+                    if not CelesteLeaderboardBot._valid_persistent_vod(this_run, self.TTV_CLIENT):
                         invalid_run["faults"].append(SubmissionErrors.ERROR_BAD_VOD)
                     # push to list of faulty runs if an error was found
                     if len(invalid_run["faults"]) > 0:
