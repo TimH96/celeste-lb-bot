@@ -6,11 +6,11 @@ This is a bot to check for basic speedrun submission errors for the [Celeste lea
 
 Pull the directory:
 ```bash
-$ git pull <eventuallink>
+$ git pull https://github.com/TimHasert/celeste-lb-bot
 $ python celeste-leaderboard-bot /path/to/config.json
 ```
 
-Or get the Docker image from the releases (or build it yourself) and run that, mounting ``/data`` to the folder on your host OS with the ``config.json``:
+Or build the Docker image and run that, mounting ``/data`` to the folder on your host OS with the ``config.json``:
 ```bash
 $ docker run --name clbb -v D:\path\to\folder\with\config:/data celesteleaderboardbot:latest
 ```
