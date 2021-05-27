@@ -19,7 +19,7 @@ The bot is configured via a ``config.json``. This can be linked to via the first
 
 The file should look like this:
 
-```json
+```javascript
 {
     "keys"  : {
         "src"    : "YOUR_API_KEY",              // your speedrun.com API key
