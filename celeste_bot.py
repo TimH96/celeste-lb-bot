@@ -197,6 +197,7 @@ class CelesteLeaderboardBot:
                 for this_run in faulty_runs:
                     # do PUT request
                     x : str = 's' if len(this_run["faults"]) > 1 else ''
+                    print(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
                     dyn_reason : str = ' || '.join(
                         [CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]]
                     )
@@ -218,7 +219,7 @@ class CelesteLeaderboardBot:
                     urlopen(put_req)
                     # save id and output
                     rejected.append(this_run["id"])
-                    print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
+                    print(f'Rejected run <{this_run["id"]}> successfully')
             # invalid URI or no authorization
             except HTTPError as error:
                 print(f'There was an HTTP error: {error} on {error.url}')
