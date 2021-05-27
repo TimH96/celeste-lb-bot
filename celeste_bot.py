@@ -200,7 +200,7 @@ class CelesteLeaderboardBot:
                     x : str = 's' if len(this_run["faults"]) > 1 else ''
                     if len(this_run["faults"]) < 3:
                         full_reason = CelesteLeaderboardBot.BASE_REASON(x) \
-                                    + [CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]]
+                                    + " || ".join([CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]])
                     else:
                         full_reason = f'{CelesteLeaderboardBot.ACCOUNT_NAME} found various issues with your submission, please read the rules or contact a moderator/verifier.'
                     print(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
