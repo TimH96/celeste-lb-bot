@@ -48,4 +48,9 @@ The file should look like this:
 ```
 
 ### Dependencies
-twitch thingy
+
+The bot requires the ``python-twitch-client`` Twitch API wrapper. It can be installed via ``pip``.
+
+```bash
+$ pip install python-twitch-client
+```
