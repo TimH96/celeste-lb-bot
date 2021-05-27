@@ -21,15 +21,18 @@ The file should look like this:
 
 ```json
 {
-    "key"   : "YOUR_API_KEY",           # your speedrun.com API key
-    "timer" : 60,                       # polling interval in seconds
+    "key"   : "YOUR_API_KEY",               # your speedrun.com API key
+    "timer" : 60,                           # polling interval in seconds
     "games" : [
         {
-            "id"      : "o1y9j9v6",     # unique game ID, found and used via the API
-            "name"    : "Celeste",      # unused/optional
-            "version" : {
-                "id_var" : "38do9y4l",  # Celeste specific version variable identifier
-                "id_val" : "5q8e7y3q"   # Celeste specific version value identifier
+            "id"      : "o1y9j9v6",         # unique game ID, found and used via the API
+            "name"    : "Celeste",          # unused/optional
+            "version" : {                   # Celeste-specific, catching faults on 'Game Version' variable
+                "variable_id" : "38do9y4l", # ID of version variable for that game
+                "default_ver" : "5q8e7y3q", # ID of default value for that game
+                "invalid_ver" : {           # array of invalid version hashed for each platform
+
+                }
             }
         }
     ]
