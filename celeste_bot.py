@@ -30,7 +30,7 @@ class CelesteLeaderboardBot:
         0 : "Your submission has real-time, leave the real-time column empty",
         1 : "You did not select a version, make sure to select the correct game version",
         2 : "Your submission has an invalid IGT, check the final time of your run and adjust the submission",
-        3 : "The version you selected does not exist on your platform, please select the correct one",
+        3 : "The version you selected does not exist on your platform, please select the correct game version",
         4 : "The video you submitted is a Twitch past broadcast, which will be automatically deleted after a while, please highlight your run"
     }
 
@@ -60,7 +60,7 @@ class CelesteLeaderboardBot:
         """Checks if the submitted version is available on the submitted platform, returns False if it isn't"""
         try:
             return True  # TODO
-        # compatibility incase new release gets added
+        # compatibility incase new platform gets added
         except KeyError:
             return True
 
