@@ -58,12 +58,21 @@ class CelesteLeaderboardBot:
     @classmethod
     def _valid_existing_version(cls, run: dict, *, variable_id: str, invalid_ver: dict, **_kwargs) -> bool:
         """Checks if the submitted version is available on the submitted platform, returns False if it isn't"""
-        return True  # TODO
+        try:
+            return True  # TODO
+        # compatibility incase new release gets added
+        except KeyError:
+            return True
 
     @classmethod
     def _valid_persistent_vod(cls, run: dict, key: str) -> bool:
         """Checks if submitted VOD is a past broadcast, returns False if so"""
-        return True  # TODO
+        try:
+            return True  # TODO
+        # catch httperror locally
+        except HTTPError as error:
+            print(f'There was an error with a request on Twitch API: {error}')
+            return True
 
     def main(self, ignore: list = [], loop: bool = False) -> None:
         """
