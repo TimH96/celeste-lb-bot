@@ -128,7 +128,7 @@ class CelesteLeaderboardBot:
                         }), encoding="utf-8"),
                         method = "PUT"
                     )
-                    urlopen(put_req)
+                    #urlopen(put_req)
                     print(f'Rejected run <{this_run["id"]}> for reasons {this_run["faults"]}')
             # invalid URI or no authorization
             except HTTPError as error:
