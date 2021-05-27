@@ -3,11 +3,15 @@ celeste_bot.py
 """
 
 import json
-from threading      import Timer
-from urllib.request import Request, urlopen
-from urllib.error   import HTTPError
-from enum           import IntEnum
-from typing         import Callable
+from threading          import Timer
+from urllib.request     import Request, urlopen
+from urllib.error       import HTTPError
+from urllib.parse       import ParseResult, urlparse
+from enum               import IntEnum
+from typing             import Callable
+from twitch             import TwitchHelix
+from twitch.exceptions  import TwitchAttributeException, TwitchOAuthException, TwitchAuthException
+from twitch.constants   import OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS
 
 __version__ = "1.0"
 
@@ -44,10 +48,14 @@ class CelesteLeaderboardBot:
     }
 
     def __init__(self, *, keys: dict, timer: float, games: list) -> None:
-        self.SRC_KEY    : str   = keys["src"]
-        self.TWITCH_KEY : str   = keys["twitch"]
-        self.GAMES      : float = games
-        self.TIMER      : list  = timer
+        self.SRC_KEY    : str         = keys["src"]
+        self.GAMES      : float       = games
+        self.TIMER      : list        = timer
+        self.TTV_CLIENT : TwitchHelix = TwitchHelix(
+            scopes        = [OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS],
+            client_id     = keys["twitch"]["client"],
+            client_secret = keys["twitch"]["secret"]
+        )
 
     @classmethod
     def _valid_real_time(cls, run : dict) -> bool:
@@ -74,12 +82,29 @@ class CelesteLeaderboardBot:
             return True
 
     @classmethod
-    def _valid_persistent_vod(cls, run: dict, key: str) -> bool:
+    def _valid_persistent_vod(cls, run: dict, client: TwitchHelix) -> bool:
         """Checks if submitted VOD is a past broadcast, returns False if so"""
         try:
-            return True  # TODO
+            uri = run["videos"]["links"]["uri"]
+            if not uri: return False
+            par : ParseResult = urlparse(uri)
+            # only check for twitch uri's
+            if 'twitch.tv' not in par.netloc:
+                return True
+            else:
+                try:
+                    vid_id : int = int(par.path.split("/")[2])
+                    client.get_videos(video_ids=[vid_id])
+                # catch potential errors with exctracting vid id
+                except IndexError:
+                    return True
+                except ValueError:
+                    return True
+        # just in case there is no video
+        except KeyError:
+            return False
         # catch httperror locally
-        except HTTPError as error:
+        except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException) as error:
             print(f'There was an error with a request on Twitch API: {error}')
             return True
 
@@ -90,6 +115,11 @@ class CelesteLeaderboardBot:
             Checks for the validity of any new submission not in the given ignore list and rejects them if necessary.
         """
         cache : list = []
+        # get new oauth
+        try:
+            self.TTV_CLIENT.get_oauth()
+        except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException) as error:
+            print(f'There was an error with getting a Twitch OAuth token: {error}')
         # loop over all games
         for game in self.GAMES:
             faulty_runs : list = []
