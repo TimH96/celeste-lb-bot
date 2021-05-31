@@ -6,7 +6,7 @@ This is a bot to check for basic speedrun submission errors for the [Celeste lea
 
 Pull the directory:
 ```bash
-$ git pull https://github.com/TimHasert/celeste-lb-bot
+$ git pull https://github.com/TimH96/celeste-lb-bot
 $ python celeste-leaderboard-bot /path/to/config.json
 ```
 
