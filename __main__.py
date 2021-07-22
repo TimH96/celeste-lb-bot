@@ -21,7 +21,7 @@ parser.add_argument(
     '-c', '--credentials',
     type=str,
     help='path to credentials.json file',
-    default='./default.json'
+    default='./credentials.json'
 )
 parser.add_argument(
     '-t', '--timer',
