@@ -28,4 +28,4 @@ creds = from_dict(
 )
 
 # create and start bot
-CelesteLeaderboardBot(**config).main()
+CelesteLeaderboardBot(creds, CELESTE_GAMES, 20).start()
