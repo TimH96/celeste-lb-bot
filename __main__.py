@@ -8,31 +8,24 @@ import sys
 import json
 from src_constants  import CELESTE_GAMES
 from celeste_bot    import CelesteLeaderboardBot
+from data_models    import Credentials
+from dacite         import from_dict
 
-# example
-"""
-o = from_dict(data_class=Credentials, data={
-    "src": {
-        "api":"asd",
-        "csrf": "str",
-        "session": "str"
-    },
-    "twitch" : {
-        "client": "str",
-        "secret": "str"
-    }
-})"""
 
 # define credentials global
-creds : dict
-
+creds_d : dict
 # read out credentials dict
 try:
     with open(sys.argv[1]) as file:
-        creds = json.loads(file.read())
+        creds_d = json.loads(file.read())
 except IndexError:
-    with open("./config.json") as file:
-        creds = json.loads(file.read())
+    with open("./credentials.json") as file:
+        creds_d = json.loads(file.read())
+# parse dict to dataclass
+creds = from_dict(
+    data_class=Credentials,
+    data=creds_d
+)
 
 # create and start bot
-#CelesteLeaderboardBot(**config).start()
+CelesteLeaderboardBot(**config).main()
