@@ -72,23 +72,23 @@ class CelesteLeaderboardBot:
             client_secret = keys["twitch"]["secret"]
         )
 
-    @classmethod
-    def _valid_real_time(cls, run : dict) -> bool:
+    @staticmethod
+    def _valid_real_time(run : dict) -> bool:
         """Checks if any RTA is submitted, returns False if so"""
         return run["times"]["realtime_t"] == 0
 
-    @classmethod
-    def _valid_default_version(cls, run: dict, *, variable_id: str, default_ver: str, **_kwargs) -> bool:
+    @staticmethod
+    def _valid_default_version(run: dict, *, variable_id: str, default_ver: str, **_kwargs) -> bool:
         """Checks if the default version is submitted, returns False if so"""
         return not(run["values"][variable_id] == default_ver)
 
-    @classmethod
-    def _valid_in_game_time(cls, run: dict) -> bool:
+    @staticmethod
+    def _valid_in_game_time(run: dict) -> bool:
         """Checks if the submitted IGT is invalid, returns False if so"""
         return (int(1000 * run["times"]["ingame_t"]) % 17) == 0
 
-    @classmethod
-    def _valid_existing_version(cls, run: dict, *, variable_id: str, invalid_ver: dict, **_kwargs) -> bool:
+    @staticmethod
+    def _valid_existing_version(run: dict, *, variable_id: str, invalid_ver: dict, **_kwargs) -> bool:
         """Checks if the submitted version is available on the submitted platform, returns False if it isn't"""
         try:
             return not(run["values"][variable_id] in invalid_ver[run["system"]["platform"]])
@@ -96,8 +96,8 @@ class CelesteLeaderboardBot:
         except KeyError:
             return True
 
-    @classmethod
-    def _valid_persistent_vod(cls, run: dict, client: TwitchHelix) -> bool:
+    @staticmethod
+    def _valid_persistent_vod(run: dict, client: TwitchHelix) -> bool:
         """Checks if submitted VOD is a past broadcast, returns False if so"""
         try:
             link_list : list = run["videos"]["links"]
