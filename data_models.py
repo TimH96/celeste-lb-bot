@@ -63,6 +63,6 @@ class Game:
 
 @dataclass(frozen=True)
 class CelesteGames:
-    """Config of Celeste Leaderboard Bot"""
+    """Repesentation of data for collection of all Celeste games"""
 
     games: List[Game]

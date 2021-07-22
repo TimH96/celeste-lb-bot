@@ -6,7 +6,7 @@ Reads out settings and CLI params and runs bot with them
 
 import sys
 import json
-from _config        import CELESTE_API_CONSTANTS
+from src_constants  import CELESTE_GAMES
 from celeste_bot    import CelesteLeaderboardBot
 
 # example

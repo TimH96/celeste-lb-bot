@@ -8,7 +8,7 @@ from data_models    import CelesteGames
 from dacite         import from_dict
 
 
-CELESTE_GAME_CONSTANTS = from_dict(
+CELESTE_GAMES = from_dict(
     data_class=CelesteGames,
     data={
         "games" : [
