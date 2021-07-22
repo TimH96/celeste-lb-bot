@@ -3,14 +3,19 @@ celeste_bot.py
 """
 
 import json
+import requests
 from datetime           import datetime
-from random             import randint, random
+from typing             import Callable
 from threading          import Timer
+from enum               import IntEnum
+
+# random will be unused when hooking onto other endpoint
+from random             import randint, random
+# urllib will be replaced with requests
 from urllib.request     import Request, urlopen, urlcleanup
 from urllib.error       import HTTPError
 from urllib.parse       import ParseResult, urlparse
-from enum               import IntEnum
-from typing             import Callable
+
 from twitch             import TwitchHelix
 from twitch.exceptions  import TwitchAttributeException, TwitchOAuthException, TwitchAuthException
 from twitch.constants   import OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS
