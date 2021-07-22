@@ -9,6 +9,19 @@ import json
 from _config        import CELESTE_API_CONSTANTS
 from celeste_bot    import CelesteLeaderboardBot
 
+# example
+"""
+o = from_dict(data_class=Credentials, data={
+    "src": {
+        "api":"asd",
+        "csrf": "str",
+        "session": "str"
+    },
+    "twitch" : {
+        "client": "str",
+        "secret": "str"
+    }
+})"""
 
 # define credentials global
 creds : dict
