@@ -17,7 +17,6 @@ from typing         import List
 class SpeedrunCredentials:
     """speedrun.com API credentials"""
 
-    api: str
     csrf: str
     session: str
 
