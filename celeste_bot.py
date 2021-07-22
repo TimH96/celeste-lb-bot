@@ -30,14 +30,6 @@ QUERY_TABLE : dict = {
     9 : "verify-date"
 }
 
-PLATFORMS : dict = {
-    "PlayStation 4" : "nzelkr6q",
-    "Xbox One"      : "o7e2mx6w",
-    "PC"            : "8gej2n93",
-    "Switch"        : "7m6ylw9p",
-    "Google Stadia" : "o064z1e3",
-    "PlayStation 5" : "4p9zjrer"
-}
 
 class SubmissionErrors(IntEnum):
     ERROR_SUBMITTED_RTA   = 0

@@ -1,5 +1,5 @@
 """
-_config.py
+src_constants.py
 
 holds global speedrun.com API constants
 """
@@ -13,7 +13,6 @@ from dacite         import from_dict
 CELESTE_API_CONSTANTS = from_dict(
     data_class=BotConfig,
     data={
-        "poll_interval" : 180,
         "games" : [
             {
                 "id"      : "o1y9j9v6",
@@ -31,3 +30,12 @@ CELESTE_API_CONSTANTS = from_dict(
         ]
     }
 )
+
+PLATFORMS : dict = {
+    "PlayStation 4" : "nzelkr6q",
+    "Xbox One"      : "o7e2mx6w",
+    "PC"            : "8gej2n93",
+    "Switch"        : "7m6ylw9p",
+    "Google Stadia" : "o064z1e3",
+    "PlayStation 5" : "4p9zjrer"
+}

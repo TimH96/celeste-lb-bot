@@ -65,5 +65,4 @@ class Game:
 class BotConfig:
     """Config of Celeste Leaderboard Bot"""
 
-    poll_interval: int
     games: List[Game]
