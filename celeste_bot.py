@@ -3,6 +3,7 @@ celeste_bot.py
 """
 
 import json
+from datetime           import datetime
 from random             import randint, random
 from threading          import Timer
 from urllib.request     import Request, urlopen, urlcleanup
@@ -29,6 +30,10 @@ QUERY_TABLE : dict = {
     8 : "status",
     9 : "verify-date"
 }
+
+
+def print_with_timestamp(out: str) -> None:
+    print(datetime.today().strftime("%d.%m.%Y %H:%M:%S").ljust(24) + str(out))
 
 
 class SubmissionErrors(IntEnum):
