@@ -15,7 +15,7 @@ from twitch             import TwitchHelix
 from twitch.exceptions  import TwitchAttributeException, TwitchOAuthException, TwitchAuthException
 from twitch.constants   import OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS
 
-__version__ = "1.0"
+__version__ = "1.1"
 
 # funny API cache hack, SRC admins hate him
 QUERY_TABLE : dict = {
