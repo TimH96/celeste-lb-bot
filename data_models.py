@@ -62,7 +62,7 @@ class Game:
 
 
 @dataclass(frozen=True)
-class BotConfig:
+class CelesteGames:
     """Config of Celeste Leaderboard Bot"""
 
     games: List[Game]

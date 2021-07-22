@@ -4,14 +4,12 @@ src_constants.py
 holds global speedrun.com API constants
 """
 
-from data_models    import BotConfig
+from data_models    import CelesteGames
 from dacite         import from_dict
 
-# hardcode celeste-specific speedrun.com api config
-# this mainly encompasses speedrun.com internal IDs and similar constants, which are static and specific to celeste
-# it is therefore not advised to extract this into actual data (be it a .json file or a database even)
-CELESTE_API_CONSTANTS = from_dict(
-    data_class=BotConfig,
+
+CELESTE_GAME_CONSTANTS = from_dict(
+    data_class=CelesteGames,
     data={
         "games" : [
             {
