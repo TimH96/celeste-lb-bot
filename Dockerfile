@@ -1,5 +1,8 @@
 FROM python:3
-RUN pip install python-twitch-client
 ADD __main__.py /
 ADD celeste_bot.py /
-CMD [ "python", "./__main__.py", "/data/config.json" ]
+ADD data_models.py /
+ADD src_constants.py /
+ADD requirements.txt /
+RUN pip install -r requirements.txt
+CMD [ "python", "./__main__.py", "--credentials", "./data/credentials.json"]
