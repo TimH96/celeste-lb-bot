@@ -2,20 +2,15 @@
 celeste_bot.py
 """
 
-import json
 import requests
 from datetime           import datetime
 from typing             import Callable
 from threading          import Timer
 from enum               import IntEnum
-
-# random will be unused when hooking onto other endpoint
+from data_models        import CelesteGameVersion, Credentials, CelesteGames
 from random             import randint, random
-# urllib will be replaced with requests
-from urllib.request     import Request, urlopen, urlcleanup
-from urllib.error       import HTTPError
+from requests.models    import Response
 from urllib.parse       import ParseResult, urlparse
-
 from twitch             import TwitchHelix
 from twitch.exceptions  import TwitchAttributeException, TwitchOAuthException, TwitchAuthException
 from twitch.constants   import OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS
@@ -63,15 +58,15 @@ class CelesteLeaderboardBot:
         4 : "The video you submitted is a Twitch past broadcast that will be deleted after a while, please highlight your run"
     }
 
-    def __init__(self, *, keys: dict, timer: float, games: list) -> None:
-        self.q_counter  : int         = 0
-        self.SRC_KEY    : str         = keys["src"]
-        self.GAMES      : float       = games
-        self.TIMER      : list        = timer
+    def __init__(self, credentials: Credentials, games: CelesteGames, timer: float) -> None:
+        self.q_counter : int = 0
+        self.CREDS : Credentials    = credentials
+        self.GAMES : CelesteGames   = games
+        self.TIMER : int            = timer
         self.TTV_CLIENT : TwitchHelix = TwitchHelix(
             scopes        = [OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS],
-            client_id     = keys["twitch"]["client"],
-            client_secret = keys["twitch"]["secret"]
+            client_id     = self.CREDS.twitch.client,
+            client_secret = self.CREDS.twitch.secret
         )
 
     @staticmethod
@@ -80,9 +75,9 @@ class CelesteLeaderboardBot:
         return run["times"]["realtime_t"] == 0
 
     @staticmethod
-    def valid_default_version(run: dict, *, variable_id: str, default_ver: str, **_kwargs) -> bool:
+    def valid_default_version(run: dict, version: CelesteGameVersion, **_kwargs) -> bool:
         """Checks if the default version is submitted, returns False if so."""
-        return not(run["values"][variable_id] == default_ver)
+        return not(run["values"][version.variable_id] == version.default_ver)
 
     @staticmethod
     def valid_in_game_time(run: dict) -> bool:
@@ -90,10 +85,10 @@ class CelesteLeaderboardBot:
         return (int(1000 * run["times"]["ingame_t"]) % 17) == 0
 
     @staticmethod
-    def valid_existing_version(run: dict, *, variable_id: str, invalid_ver: dict, **_kwargs) -> bool:
+    def valid_existing_version(run: dict, version: CelesteGameVersion, **_kwargs) -> bool:
         """Checks if the submitted version is available on the submitted platform, returns False if it isn't."""
         try:
-            return not(run["values"][variable_id] in invalid_ver[run["system"]["platform"]])
+            return not(run["values"][version.variable_id] in version.invalid_ver[run["system"]["platform"]])
         # compatibility incase new platform gets added
         except KeyError:
             print_with_timestamp(f'There was an error with checking for platform of ID {run["system"]["platform"]}')
@@ -132,115 +127,97 @@ class CelesteLeaderboardBot:
         except KeyError:
             return False
         # catch httperror locally
-        except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException) as error:
+        except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException, requests.exceptions.HTTPError) as error:
             print_with_timestamp(f'There was an error with a request on Twitch API: {error}')
             return True
 
-    def main(self, ignore: list = [], already_rejected: list = [], loop: bool = False) -> None:
+    def main(self, loop: bool = False) -> None:
         """
             Main function.
 
-            Checks for the validity of any new submission not in the given ignore list and rejects them if necessary.
+            Checks for the validity of any new submission and rejects them if necessary.
         """
-        cache    : list = []
-        rejected : list = []
         # get new oauth
         try:
             self.TTV_CLIENT.get_oauth()
         except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException) as error:
-            print(f'There was an error with getting a Twitch OAuth token: {error}')
+            print_with_timestamp(f'There was an error with getting a Twitch OAuth token: {error}')
         # loop over all games
-        for game in self.GAMES:
-            faulty_runs : list = []
+        for game in self.GAMES.games:
+            faulty_runs_of_game : list = []
+            # retrieve all new runs, added query params to try and circumvent caching (suck a phat one speedrun.com ...)
             try:
-                urlcleanup()
-                rand_d  : str     = 'desc' if random() < 0.5 else 'asc'
-                get_req : Request = Request(
-                    f'https://www.speedrun.com/api/v1/runs?game={game["id"]}&status=new&direction={rand_d}&orderby={QUERY_TABLE[self.q_counter]}&max={randint(100, 200)}',  # they hate me :^)
-                    headers = {
-                        "cache-control": "no-cache"
+                rand_d : str = 'desc' if random() < 0.5 else 'asc'
+                runs_res : Response = requests.get(
+                    f'https://www.speedrun.com/api/v1/runs?game={game.id}&status=new&direction={rand_d}&orderby={QUERY_TABLE[self.q_counter]}&max={randint(100, 200)}',  # they hate me :^)
+                    headers={
+                        'User-Agent'    : CelesteLeaderboardBot.AGENT,
+                        'Cache-Control' : "no-cache"
                     }
                 )
-                get_req.add_header('User-Agent', CelesteLeaderboardBot.AGENT)
-                new_runs : dict = json.loads(urlopen(get_req).read())["data"]
-                # loop over all new runs of a given game
-                for this_run in new_runs:
-                    # skip if already rejected
-                    if this_run["id"] in already_rejected:
-                        rejected.append(this_run["id"])
-                        continue
-                    # cache run for next iteration and skip if it was cached last iteration
-                    cache.append(this_run["id"])
-                    if this_run["id"] in ignore:
-                        continue
-                    # validity checks
-                    invalid_run : dict = {
-                        "id"     : this_run["id"],
-                        "faults" : []
-                    }
-                    # RTA check
-                    if not CelesteLeaderboardBot.valid_real_time(this_run):
-                        invalid_run["faults"].append(SubmissionErrors.ERROR_SUBMITTED_RTA)
-                    # default version check
-                    if not CelesteLeaderboardBot.valid_default_version(this_run, **game["version"]):
-                        invalid_run["faults"].append(SubmissionErrors.ERROR_NO_VERSION)
-                    # IGT check
-                    if not CelesteLeaderboardBot.valid_in_game_time(this_run):
-                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
-                    # existing version check
-                    if not CelesteLeaderboardBot.valid_existing_version(this_run, **game["version"]):
-                        invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
-                    # past broadcast check
-                    if not CelesteLeaderboardBot.valid_persistent_vod(this_run, self.TTV_CLIENT):
-                        invalid_run["faults"].append(SubmissionErrors.ERROR_BAD_VOD)
-                    # push to list of faulty runs if an error was found
-                    if len(invalid_run["faults"]) > 0:
-                        faulty_runs.append(invalid_run)
-                # loop over all invalid runs
-                for this_run in faulty_runs:
-                    # do PUT request
-                    full_reason : str
-                    x : str = 's' if len(this_run["faults"]) > 1 else ''
-                    if len(this_run["faults"]) < 3:
-                        full_reason = CelesteLeaderboardBot.BASE_REASON(x) \
-                                    + " || ".join([CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]])
-                    else:
-                        full_reason = f'{CelesteLeaderboardBot.ACCOUNT_NAME} found various issues with your submission, please read the rules or contact a moderator/verifier.'
-                    print(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
-                    put_req : Request = Request(
-                        f'https://www.speedrun.com/api/v1/runs/{this_run["id"]}/status',
-                        headers = {
-                            'User-Agent'    : CelesteLeaderboardBot.AGENT,
-                            'Content-Type'  : 'application/json',
-                            'X-API-Key'     : self.SRC_KEY,
+                # throw error if not 200 OK
+                if runs_res.status_code != 200:
+                    raise Exception(f'Response did not complete with 200 but instead with {runs_res.status_code}')
+                new_runs : dict = runs_res.json()["data"]
+            except Exception as e:
+                print_with_timestamp(f'Could not retrieve runs for game {game.name} from API with the following error: {e}')
+                continue
+            # loop over all new runs of a given game
+            for this_run in new_runs:
+                # TODO skip if already rejected, get data per api
+                # validity checks
+                invalid_run : dict = {
+                    "id"     : this_run["id"],
+                    "faults" : []
+                }
+                if not CelesteLeaderboardBot.valid_real_time(this_run):
+                    invalid_run["faults"].append(SubmissionErrors.ERROR_SUBMITTED_RTA)
+                if not CelesteLeaderboardBot.valid_default_version(this_run, game.version):
+                    invalid_run["faults"].append(SubmissionErrors.ERROR_NO_VERSION)
+                if not CelesteLeaderboardBot.valid_in_game_time(this_run):
+                    invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
+                if not CelesteLeaderboardBot.valid_existing_version(this_run, game.version):
+                    invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
+                if not CelesteLeaderboardBot.valid_persistent_vod(this_run, self.TTV_CLIENT):
+                    invalid_run["faults"].append(SubmissionErrors.ERROR_BAD_VOD)
+                # push to list of faulty runs if an error was found
+                if len(invalid_run["faults"]) > 0:
+                    faulty_runs_of_game.append(invalid_run)
+            # loop over all invalid runs of this game
+            for this_run in faulty_runs_of_game:
+                # build reason string
+                full_reason : str
+                x : str = 's' if len(this_run["faults"]) > 1 else ''
+                if len(this_run["faults"]) < 3:
+                    full_reason = CelesteLeaderboardBot.BASE_REASON(x) + r"\n\r" \
+                                + "".join([" - " + CelesteLeaderboardBot.REASON_TEXT[fault] + r'\n\r' for fault in this_run["faults"]])
+                else:
+                    full_reason = f'{CelesteLeaderboardBot.ACCOUNT_NAME} found various issues with your submission, please read the rules or contact a moderator/verifier.'
+                print_with_timestamp(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
+                # make POST request to endpoint used by webinterface
+                # actual PUT API endpoint is broken (again, suck a phat one, speedrun.com ...)
+                try:
+                    res = requests.post(
+                        'https://www.speedrun.com/editrun.php',
+                        headers={
+                            'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        data = bytes(json.dumps({
-                            "status": {
-                                "status": "rejected",
-                                "reason": full_reason
-                            }
-                        }), encoding="utf-8"),
-                        method = "PUT"
+                        cookies={
+                            'PHPSESSID': self.CREDS.src.session
+                        },
+                        data={
+                            'csrftoken': self.CREDS.src.csrf,
+                            'action': 'reject',
+                            'id': this_run["id"],
+                            'answer': full_reason
+                        }
                     )
-                    urlopen(put_req)
-                    # save id and output
-                    rejected.append(this_run["id"])
-                    print(f'Rejected run <{this_run["id"]}> successfully')
-            # invalid URI or no authorization
-            except HTTPError as error:
-                print(f'There was an HTTP error: {error} on {error.url}')
-                cache = list(set(cache + ignore))
-                rejected = list(set(rejected + already_rejected))
-                break
-            # connection error
-            except (ConnectionResetError, ConnectionRefusedError, ConnectionAbortedError, ConnectionError) as error:
-                print(f'There was a connection error: {error}')
-                cache = list(set(cache + ignore))
-                rejected = list(set(rejected + already_rejected))
-                break
+                    res.raise_for_status()
+                except requests.exceptions.RequestException as error:
+                    print_with_timestamp(error)
         # loop again if running from start()
         self.q_counter = (self.q_counter + 1) % len(QUERY_TABLE.keys())
-        if loop: Timer(self.TIMER, self.main, [cache, rejected, loop]).start()
+        if loop: Timer(self.TIMER, self.main, [loop]).start()
 
     def start(self) -> None:
         """Start bot, blocking calling thread."""
