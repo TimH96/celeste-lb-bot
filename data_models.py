@@ -38,9 +38,9 @@ class Credentials:
     twitch: TwitchCredentials
 
 
-############
-## CONFIG ##
-############
+###############
+## GAME INFO ##
+###############
 
 
 @dataclass(frozen=True)
