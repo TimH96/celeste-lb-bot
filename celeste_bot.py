@@ -164,7 +164,7 @@ class CelesteLeaderboardBot:
                 continue
             # loop over all new runs of a given game
             for this_run in new_runs:
-                # TODO skip if already rejected, get data per api
+                # TODO could implement a check here if run is already rejected and skip if so
                 # validity checks
                 invalid_run : dict = {
                     "id"     : this_run["id"],
