@@ -91,6 +91,7 @@ class CelesteLeaderboardBot:
             return not(run["values"][variable_id] in invalid_ver[run["system"]["platform"]])
         # compatibility incase new platform gets added
         except KeyError:
+            print_with_timestamp(f'There was an error with checking for platform of ID {run["system"]["platform"]}')
             return True
 
     @staticmethod
@@ -127,7 +128,7 @@ class CelesteLeaderboardBot:
             return False
         # catch httperror locally
         except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException) as error:
-            print(f'There was an error with a request on Twitch API: {error}')
+            print_with_timestamp(f'There was an error with a request on Twitch API: {error}')
             return True
 
     def main(self, ignore: list = [], already_rejected: list = [], loop: bool = False) -> None:
