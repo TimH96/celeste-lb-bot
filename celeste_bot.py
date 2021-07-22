@@ -189,8 +189,8 @@ class CelesteLeaderboardBot:
                 full_reason : str
                 x : str = 's' if len(this_run["faults"]) > 1 else ''
                 if len(this_run["faults"]) < 3:
-                    full_reason = CelesteLeaderboardBot.BASE_REASON(x) + r"\n\r" \
-                                + "".join([" - " + CelesteLeaderboardBot.REASON_TEXT[fault] + r'\n\r' for fault in this_run["faults"]])
+                    full_reason = CelesteLeaderboardBot.BASE_REASON(x) \
+                                + " || ".join([CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]])
                 else:
                     full_reason = f'{CelesteLeaderboardBot.ACCOUNT_NAME} found various issues with your submission, please read the rules or contact a moderator/verifier.'
                 print_with_timestamp(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
@@ -213,6 +213,7 @@ class CelesteLeaderboardBot:
                         }
                     )
                     res.raise_for_status()
+                    print_with_timestamp(f'Rejected run <{this_run["id"]}>')
                 except requests.exceptions.RequestException as error:
                     print_with_timestamp(error)
         # loop again if running from start()
@@ -221,4 +222,4 @@ class CelesteLeaderboardBot:
 
     def start(self) -> None:
         """Start bot, blocking calling thread."""
-        self.main([], [], True)
+        self.main(True)
