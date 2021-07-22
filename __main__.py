@@ -4,23 +4,35 @@ __main__.py
 Reads out settings and CLI params and runs bot with them
 """
 
-import sys
 import json
 from src_constants  import CELESTE_GAMES
 from celeste_bot    import CelesteLeaderboardBot
 from data_models    import Credentials
 from dacite         import from_dict
+from argparse       import ArgumentParser, Namespace
 
 
-# define credentials global
-creds_d : dict
+# argparse
+parser : ArgumentParser = ArgumentParser(
+    description='Celeste speedrun.com bot to reject faulty submissions',
+    allow_abbrev=True
+)
+parser.add_argument(
+    '-c', '--credentials',
+    type=str,
+    help='path to credentials.json file',
+    default='./default.json'
+)
+parser.add_argument(
+    '-t', '--timer',
+    type=int,
+    help='interval between polls',
+    default=60
+)
+args : Namespace = parser.parse_args()
 # read out credentials dict
-try:
-    with open(sys.argv[1]) as file:
-        creds_d = json.loads(file.read())
-except IndexError:
-    with open("./credentials.json") as file:
-        creds_d = json.loads(file.read())
+with open(args.credentials) as file:
+    creds_d : dict = json.loads(file.read())
 # parse dict to dataclass
 creds = from_dict(
     data_class=Credentials,
@@ -28,4 +40,4 @@ creds = from_dict(
 )
 
 # create and start bot
-CelesteLeaderboardBot(creds, CELESTE_GAMES, 20).start()
+CelesteLeaderboardBot(creds, CELESTE_GAMES, args.timer).start()
