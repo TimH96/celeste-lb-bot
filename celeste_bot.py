@@ -40,7 +40,7 @@ class SubmissionErrors(IntEnum):
 
 
 class CelesteLeaderboardBot:
-    """Class for leaderboard bot, interacting with speedrun.com API"""
+    """Class for leaderboard bot, interacting with speedrun.com API."""
 
     ACCOUNT_NAME : str = "BadelineBot"
     AGENT        : str = f'celeste-leaderboard-bot{__version__}'
@@ -66,12 +66,12 @@ class CelesteLeaderboardBot:
 
     @staticmethod
     def valid_real_time(run : dict) -> bool:
-        """Checks if any RTA is submitted, returns False if so"""
+        """Checks if any RTA is submitted, returns False if so."""
         return run["times"]["realtime_t"] == 0
 
     @staticmethod
     def valid_default_version(run: dict, *, variable_id: str, default_ver: str, **_kwargs) -> bool:
-        """Checks if the default version is submitted, returns False if so"""
+        """Checks if the default version is submitted, returns False if so."""
         return not(run["values"][variable_id] == default_ver)
 
     @staticmethod
@@ -81,7 +81,7 @@ class CelesteLeaderboardBot:
 
     @staticmethod
     def valid_existing_version(run: dict, *, variable_id: str, invalid_ver: dict, **_kwargs) -> bool:
-        """Checks if the submitted version is available on the submitted platform, returns False if it isn't"""
+        """Checks if the submitted version is available on the submitted platform, returns False if it isn't."""
         try:
             return not(run["values"][variable_id] in invalid_ver[run["system"]["platform"]])
         # compatibility incase new platform gets added
@@ -90,7 +90,7 @@ class CelesteLeaderboardBot:
 
     @staticmethod
     def valid_persistent_vod(run: dict, client: TwitchHelix) -> bool:
-        """Checks if submitted VOD is a past broadcast, returns False if so"""
+        """Checks if submitted VOD is a past broadcast, returns False if so."""
         try:
             link_list : list = run["videos"]["links"]
             ttv_index : int  = -1
@@ -232,5 +232,5 @@ class CelesteLeaderboardBot:
         if loop: Timer(self.TIMER, self.main, [cache, rejected, loop]).start()
 
     def start(self) -> None:
-        """Start bot, blocking calling thread"""
+        """Start bot, blocking calling thread."""
         self.main([], [], True)
