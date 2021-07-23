@@ -16,7 +16,7 @@ $ python celeste-leaderboard-bot --credentials /path/to/credentials.json --timer
 
 Or build the Docker image and run that, mounting ``/data`` to the folder on your host OS with the ``credentials.json`` file:
 ```bash
-$ docker run --name clbb -v D:\path\to\folder\with\creds:/data celesteleaderboardbot:latest
+$ docker run --detach --name clbb --restart=always -v D:\path\to\folder\with\creds:/data clbb:latest
 ```
 
 #### Configure
