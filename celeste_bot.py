@@ -131,13 +131,14 @@ class CelesteLeaderboardBot:
             print_with_timestamp(f'There was an error with a request on Twitch API: {error}')
             return True
 
-    def main(self, loop: bool = False) -> None:
+    def main(self, cache: list = [], loop: bool = False) -> None:
         """
             Main function.
 
             Checks for the validity of any new submission and rejects them if necessary.
         """
         print_with_timestamp('Executing main method')
+        new_cache : list = []
         # get new oauth
         try:
             self.TTV_CLIENT.get_oauth()
@@ -165,7 +166,11 @@ class CelesteLeaderboardBot:
                 continue
             # loop over all new runs of a given game
             for this_run in new_runs:
-                # TODO could implement a check here if run is already rejected and skip if so
+                # skip if already cached
+                if this_run['id'] in cache:
+                    new_cache.append(this_run['id'])
+                    continue
+                print(this_run['id'])
                 # validity checks
                 invalid_run : dict = {
                     "id"     : this_run["id"],
@@ -181,9 +186,11 @@ class CelesteLeaderboardBot:
                     invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
                 if not CelesteLeaderboardBot.valid_persistent_vod(this_run, self.TTV_CLIENT):
                     invalid_run["faults"].append(SubmissionErrors.ERROR_BAD_VOD)
-                # push to list of faulty runs if an error was found
+                # push to list of faulty runs if an error was found, otherwise append to cache
                 if len(invalid_run["faults"]) > 0:
                     faulty_runs_of_game.append(invalid_run)
+                else:
+                    new_cache.append(this_run['id'])
             # loop over all invalid runs of this game
             for this_run in faulty_runs_of_game:
                 # build reason string
@@ -226,13 +233,13 @@ class CelesteLeaderboardBot:
             while c <= self.TIMER:
                 sleep(1)
                 c = c+1
-            self.main(loop)
+            self.main(new_cache, loop)
 
     def start(self) -> None:
         """Start bot, blocking calling thread."""
         print_with_timestamp('Started bot')
         try:
-            self.main(True)
+            self.main([], True)
         except KeyboardInterrupt:
             print_with_timestamp('Stopped bot')
         except Exception as e:
