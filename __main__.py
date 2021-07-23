@@ -30,6 +30,7 @@ parser.add_argument(
     default=60
 )
 args : Namespace = parser.parse_args()
+
 # read out credentials dict
 with open(args.credentials) as file:
     creds_d : dict = json.loads(file.read())
