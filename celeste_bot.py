@@ -170,7 +170,6 @@ class CelesteLeaderboardBot:
                 if this_run['id'] in cache:
                     new_cache.append(this_run['id'])
                     continue
-                print(this_run['id'])
                 # validity checks
                 invalid_run : dict = {
                     "id"     : this_run["id"],
