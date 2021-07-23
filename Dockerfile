@@ -5,4 +5,4 @@ ADD data_models.py /
 ADD src_constants.py /
 ADD requirements.txt /
 RUN pip install -r requirements.txt
-CMD [ "python", "./__main__.py", "--credentials", "./data/credentials.json"]
+CMD [ "python", "-u", "./__main__.py", "--credentials", "./data/credentials.json"]
