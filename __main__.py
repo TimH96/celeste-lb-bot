@@ -31,10 +31,9 @@ parser.add_argument(
 )
 args : Namespace = parser.parse_args()
 
-# read out credentials dict
+# read out credentials.json dict and parse to class
 with open(args.credentials) as file:
     creds_d : dict = json.loads(file.read())
-# parse dict to dataclass
 creds = from_dict(
     data_class=Credentials,
     data=creds_d
