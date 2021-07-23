@@ -220,6 +220,8 @@ class CelesteLeaderboardBot:
         # loop again if running from start()
         self.q_counter = (self.q_counter + 1) % len(QUERY_TABLE.keys())
         if loop:
+            # loop sleeps instead of one big sleep or threading solution to allow for easier exiting
+            # application isn't time or accuracy critical so this type of interval implementation is sufficient
             c = 0
             while c <= self.TIMER:
                 sleep(1)
