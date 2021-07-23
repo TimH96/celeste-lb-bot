@@ -3,9 +3,9 @@ celeste_bot.py
 """
 
 import requests
+from time               import sleep
 from datetime           import datetime
 from typing             import Callable
-from threading          import Timer
 from enum               import IntEnum
 from data_models        import CelesteGameVersion, Credentials, CelesteGames
 from random             import randint, random
@@ -62,7 +62,7 @@ class CelesteLeaderboardBot:
         self.q_counter : int = 0
         self.CREDS : Credentials    = credentials
         self.GAMES : CelesteGames   = games
-        self.TIMER : int            = timer
+        self.TIMER : int            = int(timer)
         self.TTV_CLIENT : TwitchHelix = TwitchHelix(
             scopes        = [OAUTH_SCOPE_ANALYTICS_READ_EXTENSIONS],
             client_id     = self.CREDS.twitch.client,
@@ -137,7 +137,7 @@ class CelesteLeaderboardBot:
 
             Checks for the validity of any new submission and rejects them if necessary.
         """
-        print_with_timestamp("Executing main method")
+        print_with_timestamp('Executing main method')
         # get new oauth
         try:
             self.TTV_CLIENT.get_oauth()
@@ -219,8 +219,19 @@ class CelesteLeaderboardBot:
                     print_with_timestamp(error)
         # loop again if running from start()
         self.q_counter = (self.q_counter + 1) % len(QUERY_TABLE.keys())
-        if loop: Timer(self.TIMER, self.main, [loop]).start()
+        if loop:
+            c = 0
+            while c <= self.TIMER:
+                sleep(1)
+                c = c+1
+            self.main(loop)
 
     def start(self) -> None:
         """Start bot, blocking calling thread."""
-        self.main(True)
+        print_with_timestamp('Started bot')
+        try:
+            self.main(True)
+        except KeyboardInterrupt:
+            print_with_timestamp('Stopped bot')
+        except Exception as e:
+            print_with_timestamp(f'Stopped bot because of uncaught error: {e}')
