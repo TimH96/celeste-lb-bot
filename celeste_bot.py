@@ -137,6 +137,7 @@ class CelesteLeaderboardBot:
 
             Checks for the validity of any new submission and rejects them if necessary.
         """
+        print_with_timestamp("Executing main method")
         # get new oauth
         try:
             self.TTV_CLIENT.get_oauth()
