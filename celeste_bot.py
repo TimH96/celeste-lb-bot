@@ -82,7 +82,7 @@ class CelesteLeaderboardBot:
     @staticmethod
     def valid_in_game_time(run: dict) -> bool:
         """Checks if the submitted IGT is invalid, returns False if so"""
-        return (int(1000 * run["times"]["ingame_t"]) % 17) == 0
+        return (round(1000 * run["times"]["ingame_t"]) % 17) == 0
 
     @staticmethod
     def valid_existing_version(run: dict, version: CelesteGameVersion, **_kwargs) -> bool:
