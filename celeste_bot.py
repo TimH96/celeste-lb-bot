@@ -192,11 +192,11 @@ class CelesteLeaderboardBot:
                     new_cache.append(this_run['id'])
             # loop over all invalid runs of this game
             for this_run in faulty_runs_of_game:
-                print_with_timestamp(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
                 # build reason string
                 full_reason : str
                 x : str = 's' if len(this_run["faults"]) > 1 else ''
                 full_reason = CelesteLeaderboardBot.BASE_REASON(x) + " || ".join([CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]])
+                print_with_timestamp(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
                 # make POST request to endpoint used by webinterface
                 # actual PUT API endpoint is broken (again, suck a phat one, speedrun.com ...)
                 try:
