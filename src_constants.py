@@ -52,6 +52,17 @@ CELESTE_GAMES : CelesteGames = from_dict(
                         "4p9zjrer" : ["5lmvmd4l", "0137g6xl", "5q887vyq", "5lmg3eyl", "5lemyr51", "4lxe2o21", "jqz5gr4q", "21g49wx1", "p12z7gv1", "8107krpl", "mln3j2nq", "81pnr3nl", "8107jwwl", "810x4j51", "81pxr3nq", "gq77yvrq", "21gxkwoq", "jqz0ork1", "klr58ew1", "21d2pjgl", "5q8gnx6l", "4qynkvd1", "mln5g4nl", "810x2op1", "9qjgp6oq", "jq6289ol", "5lmd7r0l", "81wn6v61", "zqo5z84l", "0132zoyq", "rqvmjkyq", "5leep26l", "0q52dvvq", "4lxym5gq", "8142rokl", "z19z024q", "p122gv21", "81pxrynq", "xqkzpe4q", "gq77y5rq", "21gxknoq", "jqz0onk1", "klr583w1", "21d2pkgl", "5q8gnk6l", "4qynkzd1", "mln5g8nl", "810x2vp1", "9qjgp7oq", "jq6285ol", "5lmd7o0l", "81wn6461", "z196ev81", "jq6ngvnl", "zqokn7gl"]
                     }
                 }
+            },
+            {
+                "id"      : "w6jl3ked",
+                "name"    : "Modded Celeste",
+                "version" : {
+                    "variable_id" : "p853km0n",
+                    "default_ver" : "z19rw541",
+                    "invalid_ver" : {
+                        "8gej2n93" : []
+                    }
+                }
             }
         ]
     }
