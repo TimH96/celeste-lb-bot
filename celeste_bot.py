@@ -131,11 +131,12 @@ class CelesteLeaderboardBot:
             print_with_timestamp(f'There was an error with a request on Twitch API: {error}')
             return True
 
-    def main(self, cache: list = [], loop: bool = False) -> None:
+    def main(self, cache: list = []) -> list:
         """
             Main function.
 
             Checks for the validity of any new submission and rejects them if necessary.
+            Doesn't check cached runs, given as list of IDs, and returns list of new cached runs of all runs that were cleared.
         """
         print_with_timestamp('Executing main method')
         new_cache : list = []
@@ -219,22 +220,23 @@ class CelesteLeaderboardBot:
                     print_with_timestamp(f'Rejected run <{this_run["id"]}>')
                 except requests.exceptions.RequestException as error:
                     print_with_timestamp(error)
-        # loop again if running from start()
+        # increment query counter for anti-cache and return cached runs
         self.q_counter = (self.q_counter + 1) % len(QUERY_TABLE.keys())
-        if loop:
-            # loop sleeps instead of one big sleep or threading solution to allow for easier exiting
-            # application isn't time or accuracy critical so this type of interval implementation is sufficient
-            c = 0
-            while c <= self.TIMER:
-                sleep(1)
-                c = c+1
-            self.main(new_cache, loop)
+        return new_cache
 
     def start(self) -> None:
         """Start bot, blocking calling thread."""
         print_with_timestamp('Started bot')
         try:
-            self.main([], True)
+            cached_runs : list = []
+            while True:
+                cached_runs = self.main(cached_runs)
+                # loop sleeps instead of one big sleep or threading solution to allow for easier exiting
+                # application isn't time or accuracy critical so this type of interval implementation is sufficient
+                c = 0
+                while c <= self.TIMER:
+                    sleep(1)
+                    c = c+1
         except KeyboardInterrupt:
             print_with_timestamp('Stopped bot')
         except Exception as e:
