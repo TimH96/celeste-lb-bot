@@ -125,7 +125,7 @@ class CelesteLeaderboardBot:
                     return True
         # just in case there is no video
         except KeyError:
-            return False
+            return True
         # catch httperror locally
         except (TwitchAttributeException, TwitchOAuthException, TwitchAuthException, requests.exceptions.HTTPError) as error:
             print_with_timestamp(f'There was an error with a request on Twitch API: {error}')
