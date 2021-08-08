@@ -30,7 +30,7 @@ The file should look like this:
         "session" : "SRC_PHPSESH_COOKIE",    
         "csrf"    : "SRC_CSRF_TOKEN"
     },
-    "twitch" : {
+    "twitch": {
         "client"  : "TWITCH_CLIENT_ID",
         "secret"  : "TWITCH_CLIENT_SECRET"
     }
