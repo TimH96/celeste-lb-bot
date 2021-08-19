@@ -51,7 +51,7 @@ class CelesteLeaderboardBot:
     AGENT        : str = f'celeste-leaderboard-bot{__version__}'
     BASE_REASON  : Callable = lambda x : f'{CelesteLeaderboardBot.ACCOUNT_NAME} found the following problem{x} with your submission, please edit it accordingly: '
     REASON_TEXT  : dict = {
-        0 : "Your submission has real-time, leave the real-time column empty",
+        0 : "Your submission has real-time, leave the real-time column empty as shown here: https://i.imgur.com/zHhvKqw.png",
         1 : "You did not select a version, make sure to select the correct game version",
         2 : "Your submission has an invalid IGT, check the final time of your run and adjust the submission",
         3 : "The version you selected does not exist on your platform, please select the correct game version",
