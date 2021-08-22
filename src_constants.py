@@ -63,6 +63,61 @@ CELESTE_GAMES : CelesteGames = from_dict(
                         "8gej2n93" : []
                     }
                 }
+            },
+            {
+                "id"      : "j1lqq576",
+                "name"    : "Into The Jungle",
+                "version" : {
+                    "variable_id" : "9l7x0xqn",
+                    "default_ver" : "5q8p493l",
+                    "invalid_ver" : {
+                        "8gej2n93" : []
+                    }
+                }
+            },
+            {
+                "id"      : "y6554g36",
+                "name"    : "Glyph",
+                "version" : {
+                    "variable_id" : "5ly14pyl",
+                    "default_ver" : "21dwwrgl",
+                    "invalid_ver" : {
+                        "8gej2n93" : []
+                    }
+                }
+            },
+            {
+                "id"      : "w6j7lx46",
+                "name"    : "D-Sides",
+                "version" : {
+                    "variable_id" : "e8m5krxn",
+                    "default_ver" : "mlnnnrnl",
+                    "invalid_ver" : {
+                        "8gej2n93" : []
+                    }
+                }
+            },
+            {
+                "id"      : "46w3p271",
+                "name"    : "Quickie Mountain 2",
+                "version" : {
+                    "variable_id" : "68kodrkn",
+                    "default_ver" : "013d623l",
+                    "invalid_ver" : {
+                        "8gej2n93" : []
+                    }
+                }
+            },
+            {
+                "id"      : "k6qw4q06",
+                "name"    : "2020 Spring Collab",
+                "version" : {
+                    "variable_id" : "6njzg4el",
+                    "default_ver" : "0q5p3zrl",
+                    "invalid_ver" : {
+                        "8gej2n93" : []
+                    }
+                }
             }
         ]
     }
