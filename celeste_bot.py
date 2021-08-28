@@ -137,7 +137,9 @@ class CelesteLeaderboardBot:
                 return True
             else:
                 try:
-                    vid_id   : int  = int(par_res.path.split("/")[2])
+                    # comprehend new list of all parts of the URI after the domainname that match the ID regex, then pick the 0th element
+                    # if there is no element, it will throw an IndexError, which is caught below 
+                    vid_id : int = int([ele for ele in par_res.path.split("/") if matcher.match(ele)][0])
                     vid_data : dict = client.get_videos(video_ids=[vid_id])[0]
                     if vid_data["type"] == "archive":
                         return False
