@@ -3,6 +3,7 @@ celeste_bot.py
 """
 
 import requests
+import re
 from time               import sleep
 from datetime           import datetime
 from typing             import Callable
@@ -57,6 +58,8 @@ class CelesteLeaderboardBot:
         3 : "The version you selected does not exist on your platform, please select the correct game version",
         4 : "The video you submitted is a Twitch past broadcast that will be deleted after a while, please highlight your run"
     }
+    # regex for twitch videos ids, from my observation they are always 10 digits but leaving some leeway for potential backwards/forward compatibility
+    TWITCH_ID_MATCH : re.Pattern = re.compile("^\d{9,11}$")
 
     def __init__(self, credentials: Credentials, games: CelesteGames, timer: float) -> None:
         self.q_counter : int = 0
@@ -68,6 +71,28 @@ class CelesteLeaderboardBot:
             client_id     = self.CREDS.twitch.client,
             client_secret = self.CREDS.twitch.secret
         )
+
+    def reject_run(self, run_id: str, reason: str = None) -> None:
+        """Rejects a run given by ID. Also posts reason if given."""
+        if reason is None: reason = ""  # avoid mutable defaults footpistol
+        # make POST request to endpoint used by webinterface
+        # actual PUT API endpoint is broken (again, suck a phat one, speedrun.com ...)
+        res = requests.post(
+            'https://www.speedrun.com/editrun.php',
+            headers={
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            cookies={
+                'PHPSESSID': self.CREDS.src.session
+            },
+            data={
+                'csrftoken': self.CREDS.src.csrf,
+                'action': 'reject',
+                'id': run_id,
+                'answer': reason
+            }
+        )
+        res.raise_for_status()
 
     @staticmethod
     def valid_real_time(run : dict) -> bool:
@@ -95,7 +120,7 @@ class CelesteLeaderboardBot:
             return True
 
     @staticmethod
-    def valid_persistent_vod(run: dict, client: TwitchHelix) -> bool:
+    def valid_persistent_vod(run: dict, client: TwitchHelix, matcher: re.Pattern) -> bool:
         """Checks if submitted VOD is a past broadcast, returns False if so."""
         try:
             link_list : list = run["videos"]["links"]
@@ -184,7 +209,7 @@ class CelesteLeaderboardBot:
                     invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_IGT)
                 if not CelesteLeaderboardBot.valid_existing_version(this_run, game.version):
                     invalid_run["faults"].append(SubmissionErrors.ERROR_INVALID_VERSION)
-                if not CelesteLeaderboardBot.valid_persistent_vod(this_run, self.TTV_CLIENT):
+                if not CelesteLeaderboardBot.valid_persistent_vod(this_run, self.TTV_CLIENT, self.TWITCH_ID_MATCH):
                     invalid_run["faults"].append(SubmissionErrors.ERROR_BAD_VOD)
                 # push to list of faulty runs if an error was found, otherwise append to cache
                 if len(invalid_run["faults"]) > 0:
@@ -198,25 +223,9 @@ class CelesteLeaderboardBot:
                 x : str = 's' if len(this_run["faults"]) > 1 else ''
                 full_reason = CelesteLeaderboardBot.BASE_REASON(x) + " || ".join([CelesteLeaderboardBot.REASON_TEXT[fault] for fault in this_run["faults"]])
                 print_with_timestamp(f'Found following problem{x} with run <{this_run["id"]}>: {this_run["faults"]}')
-                # make POST request to endpoint used by webinterface
-                # actual PUT API endpoint is broken (again, suck a phat one, speedrun.com ...)
+                # reject run
                 try:
-                    res = requests.post(
-                        'https://www.speedrun.com/editrun.php',
-                        headers={
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        cookies={
-                            'PHPSESSID': self.CREDS.src.session
-                        },
-                        data={
-                            'csrftoken': self.CREDS.src.csrf,
-                            'action': 'reject',
-                            'id': this_run["id"],
-                            'answer': full_reason
-                        }
-                    )
-                    res.raise_for_status()
+                    self.reject_run(this_run["id"], full_reason)
                     print_with_timestamp(f'Rejected run <{this_run["id"]}>')
                 except requests.exceptions.RequestException as error:
                     print_with_timestamp(error)
