@@ -31,7 +31,7 @@ CELESTE_GAMES : CelesteGames = from_dict(
                         "nzelkr6q" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "o7e2mx6w" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "8gej2n93" : [],
-                        "7m6ylw9p" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
+                        "7m6ylw9p" : ["zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "o064z1e3" : ["810gdx5l", "zqoo4vxq"],
                         "4p9zjrer" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51", "p12wv871", "z1992w01", "z19rn0j1", "jq6766n1", "81w8xj91", "5lmn0eyq", "8107j55l", "z19zn7yq", "0q528evq", "0q52262q", "4qynnv41", "81wn7y51", "21d26k3l", "21d4ej31", "5lekw0zl", "gq7n65n1", "jq64d2j1", "gq7nm6n1", "81p7kme1", "814xmmwq", "zqoyep21", "p125p721", "klrzv5o1", "xqkr09d1", "81wmoemq", "4qyxe02l", "mlny6xj1", "8105e42q", "21d47051", "xqkrkxk1", "9qjzy331", "jq64kdj1", "5lmxj5m1", "81wmwkvq", "zqoyw7x1", "013veyxl", "rqv4wn6q", "8142k7kl", "5lekgwkl", "0q5oe021", "4lxxwj4l", "814xenvq", "z194gw8l", "p125e841", "81p7wg81", "klrz4jo1"]
                     }
@@ -47,7 +47,7 @@ CELESTE_GAMES : CelesteGames = from_dict(
                         "nzelkr6q" : ["5lmvmd4l", "0137g6xl", "5q887vyq", "5lmg3eyl", "5lemyr51", "4lxe2o21"],
                         "o7e2mx6w" : ["5lmvmd4l", "0137g6xl", "5q887vyq", "5lmg3eyl", "5lemyr51", "4lxe2o21"],
                         "8gej2n93" : [],
-                        "7m6ylw9p" : ["5lmvmd4l", "0137g6xl", "5q887vyq", "5lmg3eyl", "5lemyr51", "4lxe2o21"],
+                        "7m6ylw9p" : ["0137g6xl", "5q887vyq", "5lmg3eyl", "5lemyr51", "4lxe2o21"],
                         "o064z1e3" : ["5lmvmd4l", "0137g6xl"],
                         "4p9zjrer" : ["5lmvmd4l", "0137g6xl", "5q887vyq", "5lmg3eyl", "5lemyr51", "4lxe2o21", "jqz5gr4q", "21g49wx1", "p12z7gv1", "8107krpl", "mln3j2nq", "81pnr3nl", "8107jwwl", "810x4j51", "81pxr3nq", "gq77yvrq", "21gxkwoq", "jqz0ork1", "klr58ew1", "21d2pjgl", "5q8gnx6l", "4qynkvd1", "mln5g4nl", "810x2op1", "9qjgp6oq", "jq6289ol", "5lmd7r0l", "81wn6v61", "zqo5z84l", "0132zoyq", "rqvmjkyq", "5leep26l", "0q52dvvq", "4lxym5gq", "8142rokl", "z19z024q", "p122gv21", "81pxrynq", "xqkzpe4q", "gq77y5rq", "21gxknoq", "jqz0onk1", "klr583w1", "21d2pkgl", "5q8gnk6l", "4qynkzd1", "mln5g8nl", "810x2vp1", "9qjgp7oq", "jq6285ol", "5lmd7o0l", "81wn6461", "z196ev81", "jq6ngvnl", "zqokn7gl"]
                     }
