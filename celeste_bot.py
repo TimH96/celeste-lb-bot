@@ -78,7 +78,7 @@ class CelesteLeaderboardBot:
         # make POST request to endpoint used by webinterface
         # actual PUT API endpoint is broken (again, suck a phat one, speedrun.com ...)
         res = requests.post(
-            'https://www.speedrun.com/editrun.php',
+            f'https://www.speedrun.com/run/{run_id}/reject',
             headers={
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -87,8 +87,6 @@ class CelesteLeaderboardBot:
             },
             data={
                 'csrftoken': self.CREDS.src.csrf,
-                'action': 'reject',
-                'id': run_id,
                 'answer': reason
             }
         )
