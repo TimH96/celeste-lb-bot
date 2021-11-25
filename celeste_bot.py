@@ -56,7 +56,7 @@ class CelesteLeaderboardBot:
         1 : "You did not select a version, make sure to select the correct game version",
         2 : "Your submission has an invalid IGT, check the final time of your run and adjust the submission",
         3 : "The version you selected does not exist on your platform, please select the correct game version",
-        4 : "The video you submitted is a Twitch past broadcast that will be deleted after a while, please highlight your run"
+        4 : "The video you submitted is a Twitch past broadcast that will be deleted after a while. Please create a Twitch Highlight of your run before resubmitting."
     }
     # regex for twitch videos ids, from my observation they are always 10 digits but leaving some leeway for potential backwards/forward compatibility
     TWITCH_ID_MATCH : re.Pattern = re.compile("^\d{9,11}$")
