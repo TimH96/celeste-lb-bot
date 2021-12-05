@@ -15,9 +15,9 @@ PLATFORMS : dict = {
     "Switch"        : "7m6ylw9p",
     "Google Stadia" : "o064z1e3",
     "PlayStation 5" : "4p9zjrer",
-	"Xbox Series S" : "o7e2xj9w",
-	"Xbox Series X" : "nzelyv9q",
-	"Xbox One X"    : "4p9z0r6r",
+    "Xbox Series S" : "o7e2xj9w",
+    "Xbox Series X" : "nzelyv9q",
+    "Xbox One X"    : "4p9z0r6r",
     "Xbox One S"    : "o064j163"
 }
 
