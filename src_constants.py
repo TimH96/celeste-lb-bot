@@ -32,11 +32,11 @@ CELESTE_GAMES : CelesteGames = from_dict(
                     "variable_id" : "38do9y4l",
                     "default_ver" : "5q8e7y3q",
                     "invalid_ver" : {
-                        "nzelkr6q" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
+                        "nzelkr6q" : ["zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "o7e2mx6w" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "o7e2xj9w" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "nzelyv9q" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
-                        "4p9z0r6r" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
+                        "4p9z0r6r" : ["zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "o064j163" : ["810gdx5l", "zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
                         "8gej2n93" : [],
                         "7m6ylw9p" : ["zqoo4vxq", "21dg78p1", "9qjxmo0l", "rqve2p71", "5lemyz51"],
