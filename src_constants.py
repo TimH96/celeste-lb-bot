@@ -105,12 +105,11 @@ CELESTE_GAMES: CelesteGames = from_dict(
                     "default_ver": "xqkzpg4q",
                     "invalid_ver": {
                         "nzelkr6q": [
-                            "5lmvmd4l",
-                            "0137g6xl",
-                            "5q887vyq",
-                            "5lmg3eyl",
-                            "5lemyr51",
-                            "4lxe2o21",
+                            "zqoo4vxq",
+                            "21dg78p1",
+                            "9qjxmo0l",
+                            "rqve2p71",
+                            "5lemyz51",
                         ],
                         "o7e2mx6w": [
                             "5lmvmd4l",
@@ -137,7 +136,6 @@ CELESTE_GAMES: CelesteGames = from_dict(
                             "5lemyz51",
                         ],
                         "4p9z0r6r": [
-                            "810gdx5l",
                             "zqoo4vxq",
                             "21dg78p1",
                             "9qjxmo0l",
